@@ -1,57 +1,44 @@
-import socket
 import os
+import socket
 
-# Server information
+# sets up server connection
 host = "127.0.0.1"
 port = 12345
 server_information = (host, port)
 
-# Sets up server socket
-server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-server_socket.bind(server_information)
-server_socket.listen()
-print(f"Server is listening on {host}:{port}")
+# Creates client socket
+client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-# Accepts client connection
-client_connection, addr = server_socket.accept()
-print(f"Connection established with {addr}")
+# Takes file path as an input
+file_path = input("Please input a file path: ").strip()
 
-# Decides destination folder
-destination = input("Input folder path where data is to go: ").strip()
+if os.path.isfile(file_path):
+    # Opens the file and stores the data in a variable
+    with open(file_path, "rb") as f:
+        file_data = f.read()
 
-if not os.path.isdir(destination):
-    print("Path is not a directory.")
-    client_connection.close()
-    server_socket.close()
-    exit(1)
+    # Extracts the file name
+    file_name = os.path.basename(file_path)
 
-try:
-    # Receive the filename first
-    filename = client_connection.recv(1024).decode().strip()
-    print(f"Receiving file: {filename}")
+    # Sends it to another computer
+    try:
+        client_socket.connect(server_information)
 
-    # Create full save path
-    save_path = os.path.join(destination, filename)
+        # Send filename first
+        client_socket.sendall(file_name.encode())
+        client_socket.recv(1024)  # wait for ack
 
-    # Acknowledge filename received
-    client_connection.sendall(b"Filename received")
+        # Then send the actual file
+        client_socket.sendall(file_data)
 
-    # Receive the file data
-    with open(save_path, "wb") as f:
-        while True:
-            data = client_connection.recv(4096)
-            if not data:
-                break
-            f.write(data)
+        # Wait for final server confirmation
+        client_socket.recv(4096)
+        client_socket.close()
 
-    print(f"File successfully received and saved to {save_path}")
+        print("File sent successfully.")
 
-    # Send acknowledgment back to client
-    client_connection.sendall(b"File received successfully.")
+    except Exception as e:
+        print(f"Unexpected error: {e}")
 
-except Exception as e:
-    print(f"Error encountered: {e}")
-
-finally:
-    client_connection.close()
-    server_socket.close()
+else:
+    print("Path is not a file.")
