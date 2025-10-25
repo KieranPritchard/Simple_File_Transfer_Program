@@ -45,11 +45,8 @@ Successfully created a functioning file transfer system that demonstrates the fu
 
 ### Next Steps
 
-Expand the project to:
-
-* Handle multiple clients concurrently using threading.
-* Add a progress bar for file upload/download visualization.
-* Implement secure transfer using SSL/TLS.
+* Implement secure transfer using SSL.
+* Try to improve understanding of sockets.
 
 ## How to Use the Project
 
