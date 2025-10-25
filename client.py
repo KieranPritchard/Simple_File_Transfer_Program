@@ -1,4 +1,4 @@
-from genericpath import isfile
+import os
 import socket
 
 # sets up server connection
@@ -12,17 +12,16 @@ client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 # Takes file path as an input
 file_path = input("Please input a file path: ")
 
-if file_path.isfile():
+if os.path.isfile(file_path):
     # Opens the file and stores the data in a variable
     with open(file_path, "rb") as f:
         file_data = f.read()
-        file_data.encode()
 
     #  Sends it to another computer
     try:
         client_socket.connect(server_information)
-        client_socket.send(file_data)
-        client_socket.recv(1024)
+        client_socket.sendall(file_data)
+        client_socket.recv(4096)
         client_socket.close()
     except Exception as e:
         print(f"Unexpected error: {e}")
