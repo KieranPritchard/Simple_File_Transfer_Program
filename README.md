@@ -112,5 +112,3 @@ File successfully received and saved to C:\Downloads\example.txt
 ## License
 
 This project is licensed under the [MIT License](LICENSE).
-
-Would you like me to add a **diagram** (e.g., a simple client-server connection flow using Mermaid or an image badge section for Python version and code size)? It would make your README look even more professional.
